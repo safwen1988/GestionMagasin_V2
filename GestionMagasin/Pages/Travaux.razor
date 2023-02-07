@@ -1,0 +1,34 @@
+﻿@page "/Travaux"
+@using GestionMagasin.Entity
+
+<h3>Travaux Réalisés par Technicien: Total minutes et total gains</h3>
+<table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nom Technicien</th>
+                <th>Prenom Technicien</th>
+                <th>nombre minutes Travaillé</th>
+                <th>total gain</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var t in Technicien.techniciens)
+        {
+                    <tr>
+                        <td>@t.ID</td>
+                        <td>@t.Name</td>
+                        <td>@t.Prenom</td>
+                        <td>@t.nombre_minutes_Travail Minutes</td>
+                        <td>@t.total_tarif €</td>
+                    </tr>
+        }
+        </tbody>
+    </table>
+
+@code {
+   
+    
+    
+    
+}

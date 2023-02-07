@@ -1,0 +1,138 @@
+﻿@page "/Saisie"
+@using GestionMagasin.Entity
+
+<h3>Saisie des données</h3>
+<EditForm Model="@tache" OnValidSubmit="@submit">
+<DataAnnotationsValidator></DataAnnotationsValidator>
+
+    <div class="form-group row">
+        <label for="txttech" class="col-sm-2 col-form-label">Technicien</label>
+        <div class="col-sm-10">
+            <InputSelect id="txttech" class="form-control" @bind-Value="@tache.Id_Technicien">
+                <option selected value="-1">--Veuillez séléctionner le technicien--</option>
+                <option value="1 Marcel DEBUCHY">1- Marcel DEBUCHY</option>
+                <option value="2 Alain CAMARA">2- Alain CAMARA</option>
+                <option value="3 Adel LEMERE">3- Adel LEMERE</option>
+
+            </InputSelect>
+
+            <ValidationMessage For="@(()=>tache.Id_Technicien)"></ValidationMessage>
+
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label for="txtprod" class="col-sm-2 col-form-label">Numéro de série</label>
+        <div class="col-sm-10">
+            <InputText id="txtprod" class="form-control" @bind-Value="@tache.Id_Produit"></InputText>
+            <ValidationMessage For="@(()=>tache.Id_Produit)"></ValidationMessage>
+        </div>
+    </div>
+
+    <div class="form-group row">
+    <label for="txtname" class="col-sm-2 col-form-label">Nom du Client</label>
+     <div class="col-sm-10">
+        <InputText id="txtname" class="form-control" @bind-Value="@tache.Nom_Client"></InputText>
+        <ValidationMessage For="@(()=>tache.Nom_Client)"></ValidationMessage>
+     </div>
+    </div>
+    <div class="form-group row">
+        <label for="txtprenom" class="col-sm-2 col-form-label">Prenom du Client</label>
+        <div class="col-sm-10">
+            <InputText id="txtprenom" class="form-control" @bind-Value="@tache.Prenom_Client"></InputText>
+            <ValidationMessage For="@(()=>tache.Prenom_Client)"></ValidationMessage>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="txttypetache" class="col-sm-2 col-form-label">Type de Tache</label>
+        <div class="col-sm-10">
+            <InputSelect id="txttypetache" class="form-control" @bind-Value="@tache.Type_Tache">
+                <option selected value="-1">--Veuillez séléctionner une tache--</option>
+                <option disabled="@(isSummer(DateTime.Now))" value="Affutage et fartage">Affutage et fartage</option>
+                <option value="Réparation">Réparation</option>
+                <option disabled="@(!isSummer(DateTime.Now))" value="Révision annuelle">Révision annuelle</option>
+
+            </InputSelect>
+
+            <ValidationMessage For="@(()=>tache.Type_Tache)"></ValidationMessage>
+
+        </div>
+    </div>
+
+    <div class="form-group"> 
+        <button type="submit" class="btn btn-success" @onclick="(()=>{ajouterTache(tache.Id_Technicien,tache.Id_Produit,tache.Nom_Client,tache.Prenom_Client,tache.Type_Tache);
+                                                                       ajoutGain(tache.Id_Technicien.Substring(0,1));})">
+               >
+            Valider
+        </button>
+       
+    </div>
+
+</EditForm>
+
+@code {
+    public static List<Tache> taches = new List<Tache>();
+    public static Tache tache;
+    protected override void OnInitialized()
+    {
+        tache = new Tache();
+    }
+    public static void ajouterTache(string id,string id_produit, string nom, string prenom, string type_tache)
+    {
+        var t = new Tache();
+        t.Id_Technicien = id;
+        t.Id_Produit = id_produit; 
+        t.Nom_Client = nom;
+        t.Prenom_Client = prenom;
+        t.Type_Tache = type_tache;
+
+        taches.Add(t);
+
+    }
+
+    public static void ajoutGain(string s)
+    {
+        var minute =0;
+
+
+        var cn = Convert.ToInt16(s);
+        var tech = new Technicien();
+        foreach (var v in Technicien.techniciens.Where(w=>w.ID==cn))
+        {
+            //v.total_tarif+=
+            if (tache.Type_Tache == "Affutage et fartage")
+            {
+                minute = 15;
+                v.total_tarif += tache.Affutage_Fartage(minute);
+               
+            }
+            else if (tache.Type_Tache == "Réparation")
+            {
+                minute = 1;
+                v.total_tarif += tache.Reparation(minute);
+            }
+            else if (tache.Type_Tache == "Révision annuelle")
+            {
+                minute = 45;
+                v.total_tarif += tache.Revision_Annuelle(minute);
+            }
+             v.nombre_minutes_Travail += minute;
+        }
+    }
+    public void submit()
+    {
+
+    }
+    public bool isSummer(DateTime d)
+    {
+        bool result = false;
+        if (d.Month == 2&&d.Month == 5 && d.Month == 6 && d.Month == 7 && d.Month == 8 && d.Month == 9)
+        {
+            result = true;
+        }
+        return result;
+
+    }
+    
+    
+}

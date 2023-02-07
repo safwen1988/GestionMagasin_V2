@@ -1,0 +1,30 @@
+﻿@page "/Taches"
+
+<h3>Tâches Réalisés par Technicien</h3>
+<table class="table">
+        <thead>
+            <tr>
+                <th>Technicien</th>
+                <th>Code Produit</th>
+                <th>Client</th>
+                <th>Type Tache</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var tach in Saisie.taches)
+        {
+                        <tr>
+                            <td>@tach.Id_Technicien</td>
+                            <td>@tach.Id_Produit</td>
+                            <td>@tach.Prenom_Client @tach.Nom_Client</td>
+                            <td>@tach.Type_Tache</td>
+                        </tr>
+        }
+        </tbody>
+    </table>
+
+
+@code {
+
+}
