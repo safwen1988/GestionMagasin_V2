@@ -1,10 +1,10 @@
-﻿@page "/Saisie"
+@page "/Saisie"
 @using GestionMagasin.Entity
 
 <h3>Saisie des données</h3>
 <EditForm Model="@tache" OnValidSubmit="@submit">
 <DataAnnotationsValidator></DataAnnotationsValidator>
-
+    <!--choisir le technicien-->
     <div class="form-group row">
         <label for="txttech" class="col-sm-2 col-form-label">Technicien</label>
         <div class="col-sm-10">
@@ -21,6 +21,7 @@
         </div>
     </div>
 
+     <!--saisir le numéro de série du produit ski ou vélo-->
     <div class="form-group row">
         <label for="txtprod" class="col-sm-2 col-form-label">Numéro de série</label>
         <div class="col-sm-10">
@@ -29,6 +30,7 @@
         </div>
     </div>
 
+     <!--saisir le nom du client-->
     <div class="form-group row">
     <label for="txtname" class="col-sm-2 col-form-label">Nom du Client</label>
      <div class="col-sm-10">
@@ -36,6 +38,8 @@
         <ValidationMessage For="@(()=>tache.Nom_Client)"></ValidationMessage>
      </div>
     </div>
+
+     <!--saisir le prénom du client-->
     <div class="form-group row">
         <label for="txtprenom" class="col-sm-2 col-form-label">Prenom du Client</label>
         <div class="col-sm-10">
@@ -43,6 +47,8 @@
             <ValidationMessage For="@(()=>tache.Prenom_Client)"></ValidationMessage>
         </div>
     </div>
+
+     <!--choisir la tache convenable-->
     <div class="form-group row">
         <label for="txttypetache" class="col-sm-2 col-form-label">Type de Tache</label>
         <div class="col-sm-10">
@@ -50,7 +56,7 @@
                 <option selected value="-1">--Veuillez séléctionner une tache--</option>
                 <option disabled="@(isSummer(DateTime.Now))" value="Affutage et fartage">Affutage et fartage</option>
                 <option value="Réparation">Réparation</option>
-                <option disabled="@(!isSummer(DateTime.Now))" value="Révision annuelle">Révision annuelle</option>
+                <option disabled="@(isWinter(DateTime.Now))" value="Révision annuelle">Révision annuelle</option>
 
             </InputSelect>
 
@@ -62,7 +68,7 @@
     <div class="form-group"> 
         <button type="submit" class="btn btn-success" @onclick="(()=>{ajouterTache(tache.Id_Technicien,tache.Id_Produit,tache.Nom_Client,tache.Prenom_Client,tache.Type_Tache);
                                                                        ajoutGain(tache.Id_Technicien.Substring(0,1));})">
-               >
+               
             Valider
         </button>
        
@@ -73,65 +79,90 @@
 @code {
     public static List<Tache> taches = new List<Tache>();
     public static Tache tache;
+    public static bool valid = false;
     protected override void OnInitialized()
     {
         tache = new Tache();
     }
+
+    //Cette méthode assure la création d une tache courante
     public static void ajouterTache(string id,string id_produit, string nom, string prenom, string type_tache)
     {
+
         var t = new Tache();
+
         t.Id_Technicien = id;
         t.Id_Produit = id_produit; 
         t.Nom_Client = nom;
         t.Prenom_Client = prenom;
         t.Type_Tache = type_tache;
 
-        taches.Add(t);
+        if (!String.IsNullOrEmpty(t.Id_Technicien) && !String.IsNullOrEmpty(t.Id_Produit) && !String.IsNullOrEmpty(t.Nom_Client) && !String.IsNullOrEmpty(t.Prenom_Client) && !String.IsNullOrEmpty(t.Type_Tache))
+        {
+            taches.Add(t);
+            valid = true;
+        }
+        else{ valid = false; }
+
 
     }
-
+    //Cette méthode met à jour les minutes travaillées et le gain obtenu
     public static void ajoutGain(string s)
     {
         var minute =0;
-
-
         var cn = Convert.ToInt16(s);
         var tech = new Technicien();
-        foreach (var v in Technicien.techniciens.Where(w=>w.ID==cn))
+        if(valid)
         {
-            //v.total_tarif+=
-            if (tache.Type_Tache == "Affutage et fartage")
+            foreach (var v in Technicien.techniciens.Where(w => w.ID == cn))
             {
-                minute = 15;
-                v.total_tarif += tache.Affutage_Fartage(minute);
-               
+                //v.total_tarif+=
+                if (tache.Type_Tache == "Affutage et fartage")
+                {
+                    minute = 15;
+                    v.total_tarif += tache.Affutage_Fartage(minute);
+
+                }
+                else if (tache.Type_Tache == "Réparation")
+                {
+                    minute = 1;
+                    v.total_tarif += tache.Reparation(minute);
+                }
+                else if (tache.Type_Tache == "Révision annuelle")
+                {
+                    minute = 45;
+                    v.total_tarif += tache.Revision_Annuelle(minute);
+                }
+                v.nombre_minutes_Travail += minute;
             }
-            else if (tache.Type_Tache == "Réparation")
-            {
-                minute = 1;
-                v.total_tarif += tache.Reparation(minute);
-            }
-            else if (tache.Type_Tache == "Révision annuelle")
-            {
-                minute = 45;
-                v.total_tarif += tache.Revision_Annuelle(minute);
-            }
-             v.nombre_minutes_Travail += minute;
         }
+        
     }
     public void submit()
     {
 
     }
+
+    //vérifier si on est à l'été
     public bool isSummer(DateTime d)
     {
         bool result = false;
-        if (d.Month == 2&&d.Month == 5 && d.Month == 6 && d.Month == 7 && d.Month == 8 && d.Month == 9)
+        if (d.Month == 4|| d.Month == 5 || d.Month == 6 || d.Month == 7 || d.Month == 8 || d.Month == 9)
         {
             result = true;
         }
         return result;
 
+    }
+    //vérifier si on est à l'hiver
+    public bool isWinter(DateTime d)
+    {
+        bool result = false;
+        if (d.Month == 1 || d.Month == 2 || d.Month == 3 || d.Month == 10 || d.Month == 11 || d.Month == 12)
+        {
+            result = true;
+        }
+        return result;
     }
     
     
