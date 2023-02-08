@@ -1,4 +1,4 @@
-﻿namespace GestionMagasin.Entity
+namespace GestionMagasin.Entity
 {
     public class Velo : Produit
     {
@@ -9,10 +9,11 @@
         {
             return dd;
         }
-        public int Affutage_Fartage(int v)
+        public int Revision_Annuelle(int s)
         {
-            return (v * 15) / 20;
+            return (s * 45) / 50;
         }
+       
         public static List<Velo> velos = new List<Velo>
     {
        new Velo{id_velo="S120"},new Velo{id_velo="S125"},new Velo{id_velo="S330"},new Velo{id_velo="S580"},new Velo{id_velo="S750"},
