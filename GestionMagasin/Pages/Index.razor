@@ -1,4 +1,4 @@
-﻿@page "/"
+@page "/"
 
 <PageTitle>Index</PageTitle>
 <b>
@@ -9,7 +9,7 @@
     {
         <img src="images/velo.jpg" width=100% height=100% />
     }
-else
+else if(isWinter(DateTime.Now))
 {
         <img src="images/ski.jpg" width=100% height=100% />
 }
@@ -17,20 +17,21 @@ else
 </body>
 
 @code{
+    //Activer le thème été
     public bool isSummer(DateTime d)
     {
         bool result = false;
-        if (d.Month == 4 && d.Month == 5 && d.Month == 6 && d.Month == 7 && d.Month == 8 && d.Month == 9)
+        if (d.Month == 4 || d.Month == 5 || d.Month == 6 || d.Month == 7 || d.Month == 8 || d.Month == 9)
         {
             result = true;
         }
         return result;
     }
-
+    //Activer le thème hiver
     public bool isWinter(DateTime d)
     {
         bool result = false;
-        if (d.Month == 1 && d.Month == 2 && d.Month == 3 && d.Month == 10 && d.Month == 11 && d.Month == 12)
+        if (d.Month == 1 || d.Month == 2 || d.Month == 3 || d.Month == 10 || d.Month == 11 || d.Month == 12)
         {
             result = true;
         }
