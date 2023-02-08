@@ -1,4 +1,4 @@
-﻿using System.Security.Cryptography;
+using System.Security.Cryptography;
 
 namespace GestionMagasin.Entity
     
@@ -12,9 +12,9 @@ namespace GestionMagasin.Entity
         {
             return dd;
         }
-        public int Revision_Annuelle(int s) 
+        public int Affutage_Fartage(int v)
         {
-            return (s * 45) / 50;
+            return (v * 15) / 20;
         }
         public static List<Ski> skis = new List<Ski>
     {
